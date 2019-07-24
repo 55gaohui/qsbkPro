@@ -1,0 +1,9 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^article-(.*)$ index.php/Home/Article/detail/id/$1 [L,NC]
+RewriteRule ^index-(.*)-(.*).html$ index.php/Home/Article/index/pid/$1/cid/$2 [L,NC]
+RewriteRule ^index-(.*).html$ index.php/Home/Article/index/cid/$1 [L,NC]
+RewriteRule ^page-(.*).html$ index.php/Home/Article/page/cid/$1 [L,NC]
+RewriteRule ^Article/(.*)$ index.php/Article/$1 [L,NC]
+RewriteRule ^Admin$ index.php?m=Admin&c=Public&a=index [L,NC]
