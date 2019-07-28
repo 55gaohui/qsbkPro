@@ -92,6 +92,11 @@ class User extends Model
             $user->userinfo()->create(['user_id'=> $user->id]);
             return $this->CreateSaveToken($user->toArray());
         }
+        // 用户是否被禁用
+        $this->checkStatus($user->toArray());
+        // 登录成功，返回token和用户信息
+        $userarr = $user->toArray();
+        return $this->CreateSaveToken($userarr);
     }
     // 账户登录
     public function login(){
@@ -144,7 +149,8 @@ class User extends Model
     }
     //退出登录
     public function logout(){
-        if(!Cache::pull(request()->userToken)) TApiException(200,'您已经退出了',20008);
+        // 获取并清除缓存
+        if(!Cache::pull(request()->userToken)) TApiException(200,'您已经退出了',30006);
         return true;
     }
 

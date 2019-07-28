@@ -11,7 +11,7 @@ class ApiUserAuth
         //获取头部信息
         $param = $request->header();
         //不含taoken
-        if(!array_key_exists('token',$param)) TApiException(200,'禁止操作',20003);
+        if(!array_key_exists('token',$param)) TApiException(200,'请登录后操作',20003);
         //当前用户token 是否存在（是否登录）
         $token = $param['token'];
         $user = Cache::get($token);

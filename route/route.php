@@ -18,6 +18,14 @@ Route::group('api/:version/',function (){
     Route::post('user/login','api/:version.User/login');
     //第三方登录
     Route::post('user/otherlogin','api/:version.User/otherLogin');
+    // 文章分类获取
+    Route::get('postclass','api/:version.PostClass/index');
+    // 话题分类获取
+    Route::get('topicclass','api/:version.TopicClass/index');
+    //热门话题获取
+    Route::get('hottopic','api/:version.Topic/index');
+    //获取指定话题分类下的话题列表
+    Route::get('topicclass/:id/topic/:page','api/:version.TopicCLass/topic');
 });
 
 // 验证Token
@@ -25,5 +33,11 @@ Route::group('api/:version/',function (){
     //退出登录
     Route::post('user/logout','api/:version.User/logout');
 })->middleware(['ApiUserAuth']);
+
+// 验证Token  手机号 状态
+Route::group('api/:version/',function (){
+    //退出登录
+    Route::post('image/uploadmore','api/:version.Image/uploadMore');
+})->middleware(['ApiUserAuth','ApiUserBindPhone','ApiUserStatus']);
 
 
