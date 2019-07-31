@@ -8,6 +8,10 @@ class Post extends Model
 {
     //自动写入时间戳
     protected $autoWriteTimestamp = true;
+//    关联图片表
+    public function images(){
+        return $this->belongsToMany('Image','post_image');
+    }
     //发布文章
     public function createPost()
     {
@@ -32,11 +36,25 @@ class Post extends Model
             'is_open'=> $params['isopen']
         ]);
         if(!$post) TApiException(200,'发布失败',10000);
+        // 关联图片 
         $imageLength = count($params['imglist']);
         if($imageLength > 0){
+            $ImageModel = new Image();
+            $imgidarr = [];
             for($i=0; $i<$imageLength; $i++){
-                if()
+                // 验证图片是否存在，是否是当前用户上传的
+                $imagemodel = $ImageModel->isImageExist($params['imglist'][$i]['id'],$user_id);
+                if($imagemodel){
+                    // 设置第一张为封面图
+                    if($i === 0){
+                        $post->titlepic = getFileUrl($imagemodel->url);
+                        $post->save();
+                    }
+                    $imgidarr[] = $params['imglist'][$i]['id'];
+                }
             }
+            // 发布关联
+            if(count($imgidarr)>0) $post->images()->attach($imgidarr,['create_time'=>time()]);
         }
     }
 }

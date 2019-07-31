@@ -48,7 +48,7 @@ class Image extends Model
         ]);
     }
     //    验证图片是否是否为当前用户上传
-    public function isImageExist(){
-
+    public function isImageExist($id,$user_id){
+        return $this->where('user_id',$user_id)->find($id);
     }
 }
