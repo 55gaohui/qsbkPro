@@ -33,4 +33,22 @@ class BaseValidate extends Validate
         if($value != $beforeCode) return "验证码错误";
         return true;
     }
+
+    /**
+     * @param $value 话题id
+     * @param string $rule
+     * @param string $data
+     * @param string $field
+     * @return bool
+     */
+    protected function isTopicExist($value, $rule='', $data='', $field=''){
+        if($value == 0) return true;
+        if(\app\common\model\Topic::field('id')->find($value)) return true;
+        return '该话题不存在';
+    }
+//    文章分类是否存在
+    protected function isPostClassExist($value, $rule='', $data='', $field=''){
+        if(\app\common\model\PostClass::field('id')->find($value)) return true;
+        return '该文章分类不存在';
+    }
 }

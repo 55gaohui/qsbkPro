@@ -47,4 +47,8 @@ class Image extends Model
             'user_id'=>$userid
         ]);
     }
+    //    验证图片是否是否为当前用户上传
+    public function isImageExist(){
+
+    }
 }
