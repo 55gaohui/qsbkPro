@@ -29,5 +29,6 @@ class PostValidate extends Validate
      */	
     protected $message = [
         'create'=>['text','imglist','token','isopen','topic_id','post_class_id'],
+        'detail'=>['id'],
     ];
 }

@@ -8,9 +8,19 @@ class Post extends Model
 {
     //自动写入时间戳
     protected $autoWriteTimestamp = true;
-//    关联图片表
+    // 关闭自动写入update_time字段
+    protected $updateTime = false;
+    //关联图片表
     public function images(){
         return $this->belongsToMany('Image','post_image');
+    }
+    // 关联用户表
+    public function user(){
+        return $this->belongsTo('User');
+    }
+
+    public function share(){
+        return $this->belongsTo('Post','share_id','id');
     }
     //发布文章
     public function createPost()
@@ -36,7 +46,7 @@ class Post extends Model
             'is_open'=> $params['isopen']
         ]);
         if(!$post) TApiException(200,'发布失败',10000);
-        // 关联图片 
+        // 关联图片
         $imageLength = count($params['imglist']);
         if($imageLength > 0){
             $ImageModel = new Image();
@@ -56,5 +66,20 @@ class Post extends Model
             // 发布关联
             if(count($imgidarr)>0) $post->images()->attach($imgidarr,['create_time'=>time()]);
         }
+        return $post;
+    }
+    //获取文章
+    public function getPostDetail()
+    {
+        $params = request()->param();
+        return $this->with([
+            'user'=>function($query){
+                return $query->field('id,username,userpic');
+            },
+            'images'=>function($query){
+                return $query->field('url');
+            },
+            'share'
+        ])->select($params['id']);
     }
 }

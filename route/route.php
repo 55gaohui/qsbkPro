@@ -26,6 +26,10 @@ Route::group('api/:version/',function (){
     Route::get('hottopic','api/:version.Topic/index');
     //获取指定话题分类下的话题列表
     Route::get('topicclass/:id/topic/:page','api/:version.TopicCLass/topic');
+    //获取文章
+    Route::get('post/:id','api/:version.Post/index');
+    //获取指定话题下的文章列表
+    Route::get('topic/:id/post/:page','api/:version.Topic/post');
 });
 
 // 验证Token
@@ -38,6 +42,8 @@ Route::group('api/:version/',function (){
 Route::group('api/:version/',function (){
     //退出登录
     Route::post('image/uploadmore','api/:version.Image/uploadMore');
+    //发布文章
+    Route::post('post/create','api/:version.Post/create');
 })->middleware(['ApiUserAuth','ApiUserBindPhone','ApiUserStatus']);
 
 
