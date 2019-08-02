@@ -74,6 +74,10 @@ class User extends Model
     public function userbind(){
         return $this->hasMany('UserBind');
     }
+    //绑定用户信息表
+    public function post(){
+        return $this->hasMany('Post');
+    }
     //验证手机登录
     public function phoneLogin(){
         // 获取用户提交手机号码及验证码
@@ -152,6 +156,35 @@ class User extends Model
         // 获取并清除缓存
         if(!Cache::pull(request()->userToken)) TApiException(200,'您已经退出了',30006);
         return true;
+    }
+
+    //指定用户发布的文章列表
+    public function getPostList(){
+        $params = request()->param();
+        $list = self::get($params['id'])->post()->with(['user'=>function($query){
+            return $query->field('id,username,userpic');
+        },'images'=>function ($query){
+            return $query->field('url');
+        },'share'])->page($params['page'],10)->select();
+        return $list;
+    }
+    //当前用户发布的文章列表
+    public function getAllPostList(){
+        $params = request()->param();
+        $user_id = request()->userId;
+        $list = self::get($user_id)->post()->with(['user'=>function($query){
+            return $query->field('id,username,userpic');
+        },'images'=>function($query){
+            return $query->field('url');
+        },'share'])->page($params['page'],10)->select();
+        return $list;
+    }
+
+    //搜索用户
+    public function search(){
+        $params = request()->param();
+        $list = $this->whereLike('username','%'.$params['keyword'].'%')->page($params['page'],10)->select();
+        return $list;
     }
 
     //验证用户是否被禁用

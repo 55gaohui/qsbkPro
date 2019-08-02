@@ -18,6 +18,7 @@ class PostClass extends BaseController
     public function post(){
         (new TopicClassValidate())->goCheck();
         $list = (new PostClassModel())->getPost();
+        return self::showResCode('获取成功',['list'=>$list] );
     }
 
 }

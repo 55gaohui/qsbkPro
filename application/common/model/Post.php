@@ -82,4 +82,11 @@ class Post extends Model
             'share'
         ])->select($params['id']);
     }
+
+    //搜索文章
+    public function search(){
+        $params = request()->param();
+        $list = $this->whereLike('title','%'.$params['keyword'].'%')->page($params['page'],10)->select();
+        return $list;
+    }
 }

@@ -30,6 +30,18 @@ Route::group('api/:version/',function (){
     Route::get('post/:id','api/:version.Post/index');
     //获取指定话题下的文章列表
     Route::get('topic/:id/post/:page','api/:version.Topic/post');
+    //获取分类下的文章列表
+    Route::get('postclass/:id/post/:page','api/:version.PostClass/post');
+    //获取指定用户下的文章列表
+    Route::get('user/:id/post/:page','api/:version.User/post');
+    //搜索话题
+    Route::post('search/topic','api/:version.Search/topic');
+    //搜索文章
+    Route::post('search/post','api/:version.Search/post');
+    //搜索用户
+    Route::post('search/user','api/:version.Search/user');
+    //广告列表
+    Route::get('adsense/:type','api/:version.Adsense/index');
 });
 
 // 验证Token
@@ -44,6 +56,8 @@ Route::group('api/:version/',function (){
     Route::post('image/uploadmore','api/:version.Image/uploadMore');
     //发布文章
     Route::post('post/create','api/:version.Post/create');
+    //获取当前用户下的文章列表
+    Route::get('user/allpost/:page','api/:version.User/Allpost');
 })->middleware(['ApiUserAuth','ApiUserBindPhone','ApiUserStatus']);
 
 

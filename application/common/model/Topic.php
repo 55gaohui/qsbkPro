@@ -25,4 +25,11 @@ class Topic extends Model
         },'share'])->page($params['page'],10)->select();
         return $posts;
     }
+
+    //标题搜索话题
+    public function search(){
+        $params = request()->param();
+        $list = $this->whereLike('title','%'.$params['keyword'].'%')->page($params['page'],10)->select();
+        return $list;
+    }
 }

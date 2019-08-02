@@ -37,9 +37,22 @@ class User extends BaseController
         $token = (new UserModel())->otherLogin();
         return self::showResCode('登录成功',['token'=>$token]);
     }
+    //退出登录
     public function logout()
     {
         (new UserModel())->logout();
         return "退出登录";
+    }
+    //指定用户发布的文章列表
+    public function post(){
+        (new UserValidate())->goCheck('post');
+        $list = (new UserModel())->getPostList();
+        return self::showResCode('获取成功',['list'=>$list]);
+    }
+    //当前用户发布的文章列表（含隐私）
+    public function Allpost(){
+        (new UserValidate())->goCheck('allpost');
+        $list = (new UserModel())->getAllPostList();
+        return self::showResCode('获取成功',['list'=>$list]);
     }
 }

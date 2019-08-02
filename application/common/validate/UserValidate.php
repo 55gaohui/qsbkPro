@@ -20,6 +20,8 @@ class UserValidate extends BaseValidate
         'nickName'=>'require',
         'avatarUrl'=>'require',
         'expires_in'=>'require',
+        'id'=>'require|integer|>:0',
+        'page'=>'require|integer|>:0',
     ];
     
     /**
@@ -49,6 +51,11 @@ class UserValidate extends BaseValidate
         'phonelogin'=>['phone','code'],
         //用户名邮箱手机号登录
         'login'=>['username','password'],
-        'otherlogin' => ['provider','openid','nickName','avatarUrl','expires_in']
+        //第三方登录
+        'otherlogin' => ['provider','openid','nickName','avatarUrl','expires_in'],
+        //指定用户发布的文章列表
+        'post'=>['id','page'],
+        //当前用户发布的文章列表
+        'allpost'=>['page']
     ];
 }

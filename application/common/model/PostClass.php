@@ -19,6 +19,12 @@ class PostClass extends Model
 
     // 获取指定分类下的文章（分页）
     public function getPost(){
-
+        $params = request()->param();
+        $list= self::get($params['id'])->post()->with(['user'=>function($query){
+            return $query->field('id,username,userpic');
+        },'images'=>function($query){
+            return $query->field('url');
+        },'share'])->page($params['page'],10)->select();
+        return $list;
     }
 }
