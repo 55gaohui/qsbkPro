@@ -78,7 +78,7 @@ class User extends Model
     public function post(){
         return $this->hasMany('Post');
     }
-    //验证手机登录
+    //验证手机登录  
     public function phoneLogin(){
         // 获取用户提交手机号码及验证码
         $param = request()->param();
@@ -186,6 +186,9 @@ class User extends Model
         $list = $this->whereLike('username','%'.$params['keyword'].'%')->page($params['page'],10)->select();
         return $list;
     }
+
+    //绑定手机
+    
 
     //验证用户是否被禁用
     public function checkStatus($arr, $isReget = false)

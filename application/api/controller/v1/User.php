@@ -55,4 +55,10 @@ class User extends BaseController
         $list = (new UserModel())->getAllPostList();
         return self::showResCode('获取成功',['list'=>$list]);
     }
+
+    //绑定手机
+    public function bindphone()
+    {
+        return '11';
+    }
 }

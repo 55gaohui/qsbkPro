@@ -4,7 +4,7 @@ namespace app\common\validate;
 
 use think\Validate;
 
-class AdsenseValidate extends Validate
+class AdsenseValidate extends BaseValidate
 {
     /**
      * 定义验证规则

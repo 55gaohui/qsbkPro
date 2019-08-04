@@ -48,6 +48,8 @@ Route::group('api/:version/',function (){
 Route::group('api/:version/',function (){
     //退出登录
     Route::post('user/logout','api/:version.User/logout');
+    //绑定手机
+    Route::post('user/bindphone','api/:version.User/bindphone');
 })->middleware(['ApiUserAuth']);
 
 // 验证Token  手机号 状态
