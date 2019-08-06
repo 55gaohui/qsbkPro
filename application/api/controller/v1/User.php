@@ -59,6 +59,22 @@ class User extends BaseController
     //绑定手机
     public function bindphone()
     {
-        return '11';
+        (new UserValidate())->goCheck('bindphone');
+        (new UserModel())->bindphone();
+        return self::showResCode('绑定成功');
+    }
+    //绑定邮箱
+    public function bindemail()
+    {
+        (new UserValidate())->goCheck('bindemail');
+        (new UserModel())->bindemail();
+        return self::showResCode('绑定成功');
+    }
+    //绑定第三方
+    public function bindother()
+    {
+        (new UserValidate())->goCheck('bindother');
+        (new UserModel())->bindother();
+        return self::showResCode('绑定成功');
     }
 }

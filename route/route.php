@@ -50,6 +50,10 @@ Route::group('api/:version/',function (){
     Route::post('user/logout','api/:version.User/logout');
     //绑定手机
     Route::post('user/bindphone','api/:version.User/bindphone');
+    //绑定邮箱
+    Route::post('user/bindemail','api/:version.User/bindemail');
+    //绑定第三方
+    Route::post('user/bindother','api/:version.User/bindother');
 })->middleware(['ApiUserAuth']);
 
 // 验证Token  手机号 状态

@@ -56,6 +56,12 @@ class UserValidate extends BaseValidate
         //指定用户发布的文章列表
         'post'=>['id','page'],
         //当前用户发布的文章列表
-        'allpost'=>['page']
+        'allpost'=>['page'],
+        //绑定手机
+        'bindphone'=>['phone'],
+        //绑定邮箱
+        'bindemail'=>['email'],
+        //绑定第三方
+        'bindother'=>['provider','openid','nickName','avatarUrl'],
     ];
 }
