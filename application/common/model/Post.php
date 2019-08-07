@@ -18,9 +18,13 @@ class Post extends Model
     public function user(){
         return $this->belongsTo('User');
     }
-    // 关联顶踩
+    // 关联顶踩表
     public function support(){
         return $this->hasMany('Support');
+    }
+    // 关联评论表
+    public function comment(){
+        return $this->hasMany('Comment');
     }
     //关联分享
     public function share(){
@@ -91,6 +95,19 @@ class Post extends Model
     public function search(){
         $params = request()->param();
         $list = $this->whereLike('title','%'.$params['keyword'].'%')->page($params['page'],10)->select();
+        return $list;
+    }
+
+    //获取文章评论列表
+    public function getComment()
+    {
+        //获取所有参数
+        $params = request()->param();
+        $list = $this->get($params['id'])->comment()->with([
+            'user'=>function($query){
+                return $query->field('id,username,userpic');
+            }
+        ])->select();
         return $list;
     }
 }

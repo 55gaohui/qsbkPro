@@ -4,7 +4,7 @@ namespace app\common\validate;
 
 use think\Validate;
 
-class AdsenseValidate extends BaseValidate
+class CommentValidate extends BaseValidate
 {
     /**
      * 定义验证规则
@@ -13,7 +13,9 @@ class AdsenseValidate extends BaseValidate
      * @var array
      */	
 	protected $rule = [
-	    'type'=>'require|integer|in:0,1'
+        'fid'=>'require|integer|>:-1|isCommentExist',
+        'data'=>'require|print',
+        'post_id'=>'require|integer|>:0|isPostExist',
     ];
     
     /**
