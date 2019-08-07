@@ -266,9 +266,9 @@ class User extends Model
         $currentLoginType = $currentUserInfo['logintype'];
         // 验证绑定类型是否冲突
         $this->checkBindType($currentLoginType,'email');
-        //查询邮箱是否被绑定
+        //查询邮箱是否存在
         $binduser = $this->isExist(['email'=>$params['email']]);
-        //邮箱被绑定 存在
+        //邮箱存在
         if($binduser){
             //账号手机号登录
             if($currentLoginType == 'username' || $currentLoginType == 'phone') TApiException(200,'邮箱已被绑定',20006);
@@ -326,7 +326,33 @@ class User extends Model
     }
     //绑定第三方
     public function bindother(){
-
+        // 获取所有参数
+        $params = request()->param();
+        $currentUserInfo = request()->userTokenUserInfo;
+        $currentUserId = request()->userId;
+        //当前登录类型
+        $currentLoginType = $currentUserInfo['logintype'];
+        //验证绑定类型是否冲突
+        $this->checkBindType($currentLoginType,$params['provider']);
+        //查询该第三方是否存在
+        $binduser = $this->isExist(['provider'=>$params['provider'],'openid'=>$params['openid']]);
+        //第三方信息存在
+        if($binduser){
+            //第三方的user_id>0  (已绑定)
+            if($binduser->user_id) TApiException(200,$params['provider'].'已被绑定',20006);
+            //第三方的user_id=0 （未绑定）
+            //绑定
+            $binduser->user_id = $currentUserInfo['id'];
+            return $binduser->save();
+        }
+        //不存在
+        return $this->userbind()->create([
+            'type'=>$params['provider'],
+            'openid'=>$params['openid'],
+            'nickname'=>$params['nickName'],
+            'avatarurl'=>$params['avatarUrl'],
+            'user_id'=>$currentUserId
+        ]);
     }
 
     //验证用户是否被禁用

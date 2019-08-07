@@ -18,7 +18,11 @@ class Post extends Model
     public function user(){
         return $this->belongsTo('User');
     }
-
+    // 关联顶踩
+    public function support(){
+        return $this->hasMany('Support');
+    }
+    //关联分享
     public function share(){
         return $this->belongsTo('Post','share_id','id');
     }

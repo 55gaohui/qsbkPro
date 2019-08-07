@@ -17,4 +17,5 @@ return [
     'ApiUserAuth' => app\http\middleware\ApiUserAuth::class,
     'ApiUserBindPhone' => app\http\middleware\ApiUserBindPhone::class,
     'ApiUserStatus' => app\http\middleware\ApiUserStatus::class,
+    'ApiGetUserid' => app\http\middleware\ApiGetUserid::class,
 ];

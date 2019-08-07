@@ -25,6 +25,7 @@ class BaseValidate extends Validate
      * @param string $data 用户当前场景的值 全部数据（数组）    'phoneLogin' => ['phone','code']
      * @param string $field   当前字段名 code
      */
+
     protected function isPefectCode($value, $rule='', $data='', $field=''){
         //验证码不存在
         $beforeCode = cache($data['phone']);
@@ -41,14 +42,20 @@ class BaseValidate extends Validate
      * @param string $field
      * @return bool
      */
+    //话题是否存在
     protected function isTopicExist($value, $rule='', $data='', $field=''){
         if($value == 0) return true;
         if(\app\common\model\Topic::field('id')->find($value)) return true;
         return '该话题不存在';
     }
-//    文章分类是否存在
+    //文章分类是否存在
     protected function isPostClassExist($value, $rule='', $data='', $field=''){
         if(\app\common\model\PostClass::field('id')->find($value)) return true;
         return '该文章分类不存在';
+    }
+    //文章是否存在
+    protected function isPostExist($value, $rule='', $data='', $field=''){
+        if(\app\common\model\Post::field('id')->find($value)) return true;
+        return '该文章不存在';
     }
 }

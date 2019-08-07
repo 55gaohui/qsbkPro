@@ -31,7 +31,7 @@ Route::group('api/:version/',function (){
     //获取指定话题下的文章列表
     Route::get('topic/:id/post/:page','api/:version.Topic/post');
     //获取分类下的文章列表
-    Route::get('postclass/:id/post/:page','api/:version.PostClass/post');
+    Route::get('postclass/:id/post/:page','api/:version.PostClass/post')->middleware(['ApiGetUserid']);
     //获取指定用户下的文章列表
     Route::get('user/:id/post/:page','api/:version.User/post');
     //搜索话题
@@ -64,6 +64,8 @@ Route::group('api/:version/',function (){
     Route::post('post/create','api/:version.Post/create');
     //获取当前用户下的文章列表
     Route::get('user/allpost/:page','api/:version.User/Allpost');
+    //用户顶踩
+    Route::post('support','api/:version.Support/index');
 })->middleware(['ApiUserAuth','ApiUserBindPhone','ApiUserStatus']);
 
 
