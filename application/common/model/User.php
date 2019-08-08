@@ -449,7 +449,7 @@ class User extends Model
         $userinfo->save();
         return true;
     }
-    //修改用户资料
+    //修改密码
     public function repassword(){
         //获取所有参数
         $params = request()->param();

@@ -58,6 +58,13 @@ class BaseValidate extends Validate
         if(\app\common\model\Post::field('id')->find($value)) return true;
         return '该文章不存在';
     }
+
+    //用户是否存在
+    protected function isUserExist($value, $rule='', $data='', $field=''){
+        if(\app\common\model\User::field('id')->find($value)) return true;
+        return '该用户不存在';
+    }
+
     //评论是否存在
     protected function isCommentExist($value, $rule='', $data='', $field=''){
         //当fid为0 表示是评论文章
