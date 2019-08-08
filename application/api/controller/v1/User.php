@@ -77,4 +77,28 @@ class User extends BaseController
         (new UserModel())->bindother();
         return self::showResCode('绑定成功');
     }
+
+    //修改头像
+    public function editUserpic()
+    {
+        (new UserValidate())->goCheck('edituserpic');
+        (new UserModel())->editUserpic();
+        return self::showResCode('修改成功');
+    }
+
+    //修改用户资料
+    public function editUserinfo()
+    {
+        (new UserValidate())->goCheck('edituserinfo');
+        (new UserModel())->editUserinfo();
+        return self::showResCode('修改成功');
+    }
+
+    //修改密码
+    public function rePassword()
+    {
+        (new UserValidate())->goCheck('repassword');
+        (new UserModel())->repassword();
+        return self::showResCode('修改成功');
+    }
 }

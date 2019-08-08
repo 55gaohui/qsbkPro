@@ -22,6 +22,16 @@ class UserValidate extends BaseValidate
         'expires_in'=>'require',
         'id'=>'require|integer|>:0',
         'page'=>'require|integer|>:0',
+        'userpic'=>'image',
+        'name'=>'require|chsDash',
+        'sex'=>'require|in:0,1,2',
+        'qg'=>'require|in:0,1,2',
+        'job'=>'require|chsAlpha',
+        'birthday'=>'require|dateFormat:Y-m-d',
+        'path'=>'require|chsDash',
+        'oldpassword'=>'require',
+        'newpassword'=>'require|alphaDash',
+        'renewpassword'=>'require|confirm:newpassword',
     ];
     
     /**
@@ -63,5 +73,11 @@ class UserValidate extends BaseValidate
         'bindemail'=>['email'],
         //绑定第三方
         'bindother'=>['provider','openid','nickName','avatarUrl'],
+        //修改头像
+        'edituserpic'=>['userpic'],
+        //修改资料
+        'edituserinfo'=>['name','sex','qg','job','birthday','path'],
+        //修改密码
+        'repassword'=>['oldpassword','newpassword','renewpassword'],
     ];
 }
