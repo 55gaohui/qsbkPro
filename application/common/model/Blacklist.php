@@ -39,7 +39,7 @@ class Blacklist extends Model
         $black = $this->where([
             'user_id'=>$userid,
             'black_id'=>$blackid
-        ]);
+        ])->find();
         // 记录不存在
         if(!$black) TApiException(200,'对方已不在你的黑名单内',40002);
         // 直接删除

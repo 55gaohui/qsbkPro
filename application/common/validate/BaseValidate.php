@@ -73,4 +73,11 @@ class BaseValidate extends Validate
         if(\app\common\model\Comment::field('id')->find($value)) return true;
         return '回复的评论不存在';
     }
+
+    // 不能为空
+    protected function NotEmpty($value, $rule='', $data='', $field='')
+    {
+        if (empty($value)) return $field."不能为空";
+        return true;
+    }
 }

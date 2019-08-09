@@ -2,6 +2,7 @@
 
 namespace app\common\model;
 
+use think\Db;
 use think\facade\Cache;
 use think\Model;
 class User extends Model
@@ -74,14 +75,19 @@ class User extends Model
     public function userinfo(){
         return $this->hasOne('Userinfo');
     }
-    //绑定用户信息表
+    //绑定第三方表
     public function userbind(){
         return $this->hasMany('UserBind');
     }
-    //绑定用户信息表
+    //绑定文章表
     public function post(){
         return $this->hasMany('Post');
     }
+    //绑定粉丝表
+    public function withfollow(){
+        return $this->hasMany('Follow','user_id');
+    }
+
     //验证手机登录  
     public function phoneLogin(){
         // 获取用户提交手机号码及验证码
@@ -471,5 +477,95 @@ class User extends Model
         $user['password'] = $newpassword;
         // 更新缓存信息
         Cache::set(request()->Token,$user,config('api.token_expire'));
+    }
+    //关注
+    public function ToFollow(){
+        // 获取所有参数
+        $params = request()->param();
+        // 获取用户id
+        $userid = request()->userId;
+        $follow_id = $params['follow_id'];
+        if($follow_id == $userid) TApiException(200,'非法操作',10000);
+        // 获取到当前用户的关注模型
+        $followModel  = $this->get($userid)->withfollow();
+        //查询记录是否存在
+        $follow = $followModel->where('follow_id',$follow_id)->find();
+        if($follow) TApiException(200,'已经关注过了',10000);
+        $followModel->create([
+            'user_id'=>$userid,
+            'follow_id'=>$follow_id
+        ]);
+        return true;
+    }
+    //取消关注
+    public function ToUnFollow(){
+        // 获取所有参数
+        $params = request()->param();
+        // 获取用户id
+        $userid = request()->userId;
+        $follow_id = $params['follow_id'];
+        if($follow_id == $userid) TApiException(200,'非法操作',10000);
+        // 获取到当前用户的关注模型
+        $followModel  = $this->get($userid)->withfollow();
+        //查询记录是否存在
+        $follow = $followModel->where('follow_id',$follow_id)->find();
+        if(!$follow) TApiException(200,'暂未关注',10000);
+        $follow->delete();
+        return true;
+    }
+    //互关列表
+    public function getFriendsList(){
+        // 获取所有参数
+        $params = request()->param();
+        // 获取用户id
+        $userid = request()->userId;
+        $page = $params['page'];
+        $follows = Db::table('user')->where('id', 'IN', function($query) use($userid){
+          $query->table('follow')->where('user_id', 'IN', function($query) use($userid){
+              $query->table('follow')->where('user_id',$userid)->field('follow_id');
+            })->where('follow_id',$userid)->field('user_id');
+        })->field('id,username,userpic')->select();
+        return $follows;
+    }
+    // 关联粉丝列表
+    public function fens(){
+        return $this->belongsToMany('User','Follow','user_id','follow_id');
+    }
+    //粉丝列表
+    public function getFensList(){
+        // 获取所有参数
+        $params = request()->param();
+        // 获取用户id
+        $userid = request()->userId;
+
+        $fens = $this->get($userid)->fens()->page($params['page'],10)->select()->toArray();
+        return $this->filterReturn($fens);
+    }
+    // 关联关注列表
+    public function follows(){
+        return $this->belongsToMany('User','Follow','follow_id','user_id');
+    }
+    //关注列表
+    public function getFollowsList(){
+        // 获取所有参数
+        $params = request()->param();
+        // 获取用户id
+        $userid = request()->userId;
+        $follows = $this->get($userid)->follows()->page($params['page'],10)->select()->toArray();
+        return $this->filterReturn($follows);
+    }
+
+    //粉丝列表和关注列表过滤字段
+    public function filterReturn($params = []){
+        $arr = [];
+        $length = count($params);
+        for($i= 0; $i<$length; $i++){
+            $arr[] = [
+                'id'=>$params[$i]['id'],
+                'username'=>$params[$i]['username'],
+                'userpic'=>$params[$i]['userpic']
+            ];
+        }
+        return $arr;
     }
 }

@@ -24,4 +24,5 @@ class Blacklist extends BaseController
         (new BlacklistModel())->removeBlack();
         return self::showResCode('移除黑名单成功');
     }
+
 }

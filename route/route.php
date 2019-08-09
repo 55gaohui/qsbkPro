@@ -80,6 +80,20 @@ Route::group('api/:version/',function (){
     Route::post('addblack','api/:version.Blacklist/addBlack');
     //移除黑名单    
     Route::post('removeblack','api/:version.Blacklist/removeBlack');
+    //关注
+    Route::post('follow','api/:version.User/follow');
+    //取消关注
+    Route::post('unfollow','api/:version.User/unfollow');
+    //互关列表
+    Route::post('friends/:page','api/:version.User/friends');
+    //粉丝列表
+    Route::post('fens/:page','api/:version.User/fens');
+    //关注列表
+    Route::post('follows/:page','api/:version.User/follows');
+    //用户反馈
+    Route::post('feedback','api/:version.Feedback/feedback');
+    //关注列表
+    Route::get('follows/:page','api/:version.User/follows');
 })->middleware(['ApiUserAuth','ApiUserBindPhone','ApiUserStatus']);
 
 
