@@ -4,7 +4,7 @@ namespace app\common\validate;
 
 use think\Validate;
 
-class FeedbackValidate extends BaseValidate
+class UpdateValidate extends BaseValidate
 {
     /**
      * 定义验证规则
@@ -13,8 +13,7 @@ class FeedbackValidate extends BaseValidate
      * @var array
      */	
 	protected $rule = [
-        'data'=>'require|NotEmpty',
-        'page'=>'require|integer|>:0'
+        'ver'=>'require|NotEmpty'
     ];
     
     /**
@@ -24,12 +23,4 @@ class FeedbackValidate extends BaseValidate
      * @var array
      */	
     protected $message = [];
-    /**
-     * 定义验证场景
-     * @var array
-     */
-    protected $scene = [
-        'feedback' => ['data'],
-        'feedbacklist' => ['page']
-    ];
 }

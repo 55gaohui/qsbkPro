@@ -44,6 +44,8 @@ Route::group('api/:version/',function (){
     Route::get('adsense/:type','api/:version.Adsense/index');
     //文章评论列表
     Route::post('post/:id/comment','api/:version.Post/comment');
+    //检查更新
+    Route::post('update','api/:version.Update/update');
 });
 
 // 验证Token
@@ -92,8 +94,8 @@ Route::group('api/:version/',function (){
     Route::post('follows/:page','api/:version.User/follows');
     //用户反馈
     Route::post('feedback','api/:version.Feedback/feedback');
-    //关注列表
-    Route::get('follows/:page','api/:version.User/follows');
+    //获取用户反馈列表
+    Route::get('feedbacklist/:page','api/:version.Feedback/feedbacklist');
 })->middleware(['ApiUserAuth','ApiUserBindPhone','ApiUserStatus']);
 
 
