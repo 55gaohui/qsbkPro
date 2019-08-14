@@ -99,3 +99,9 @@ Route::group('api/:version/',function (){
 })->middleware(['ApiUserAuth','ApiUserBindPhone','ApiUserStatus']);
 
 
+//socket
+Route::group('api/:version/',function (){
+    //发送消息
+    Route::post('send','api/:version.Chat/send');
+})->middleware(['ApiUserAuth','ApiUserBindPhone','ApiUserStatus']);
+
