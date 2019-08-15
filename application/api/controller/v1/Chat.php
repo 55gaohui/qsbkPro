@@ -5,11 +5,18 @@ namespace app\api\controller\v1;
 use app\common\controller\BaseController;
 use app\common\validate\ChatValidate;
 use GatewayWorker\Lib\Gateway;
+use think\App;
 use think\facade\Cache;
 use think\Request;
 
 class Chat extends BaseController
 {
+    public function __construct()
+    {
+        Gateway::$registerAddress = config('gateway_worker.registerAddress');
+    }
+
+    //发送消息
     public function send(Request $request){
         // 1. 验证数据是否合法
         (new ChatValidate())->goCheck('send');
@@ -28,6 +35,13 @@ class Chat extends BaseController
         //不在线，写入消息队列
         //获取之前消息
         $Cache = Cache::get('userchat_'.$to_id);
+        if(!$Cache || !is_array($Cache)) $Cache = [];
+        $Cache[] = $data;
+        //写入数据库
+        //写入消息队列（含id）
+        Cache::set('userchat_'.$to_id,$Cache);
+        return self::showResCodeWithOutData('ok',200);
+
         
 
     }
@@ -44,4 +58,22 @@ class Chat extends BaseController
             'time'=>time()
         ];
     }
+
+    // 绑定上线
+    public function bind(Request $request){
+        //{ token:"5fe5a0d48aea3c07846eaa5cca984f09336d65e8",type:"bind",client_id:"7f0000010b5700000001"}';
+        // 验证当前用户是否绑定手机号，状态等信息，验证数据合法性
+        (new ChatValidate)->goCheck('bind');
+        $userId = $request->userId;
+        $client_id = $request->client_id;
+        // 验证client_id合法性
+        if (!Gateway::isOnline($client_id)) return TApiException('clientId不合法');
+        // 验证当前客户端是否已经绑定
+        if (Gateway::getUidByClientId($client_id)) return TApiException('已被绑定');
+        // 直接绑定
+        Gateway::bindUid($request->client_id,$userId);
+        // 返回成功
+        return self::showResCode('绑定成功',['type'=>'bind','status'=>true]);
+    }
+
 }
