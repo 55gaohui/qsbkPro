@@ -16,6 +16,16 @@ class Chat extends BaseController
         Gateway::$registerAddress = config('gateway_worker.registerAddress');
     }
 
+    //接收未接收消息
+    public function get(Request $request){
+        //判断当前用户是否在线
+        if(!Gateway::isUidOnline($request->userId)) return;
+        //获取并清除所有未接收信息
+        $Cache = Cache::pull('userchat_'.$request->userId);
+        if(!$Cache || !is_array($Cache)) return;
+        //开始推送
+        return self::showResCode('ok',$Cache);
+    }
     //发送消息
     public function send(Request $request){
         // 1. 验证数据是否合法
@@ -64,7 +74,9 @@ class Chat extends BaseController
         //{ token:"5fe5a0d48aea3c07846eaa5cca984f09336d65e8",type:"bind",client_id:"7f0000010b5700000001"}';
         // 验证当前用户是否绑定手机号，状态等信息，验证数据合法性
         (new ChatValidate)->goCheck('bind');
+        //拿到当前用户的userid
         $userId = $request->userId;
+        //拿到当前客户端的id
         $client_id = $request->client_id;
         // 验证client_id合法性
         if (!Gateway::isOnline($client_id)) return TApiException('clientId不合法');

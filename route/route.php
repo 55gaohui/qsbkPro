@@ -102,6 +102,10 @@ Route::group('api/:version/',function (){
 //socket
 Route::group('api/:version/',function (){
     //发送消息
-    Route::post('send','api/:version.Chat/send');
+    Route::post('chat/send','api/:version.Chat/send');
+    //接收未接收消息
+    Route::post('chat/get','api/:version.Chat/get');
+    //绑定上线
+    Route::post('chat/bind','api/:version.Chat/bind');
 })->middleware(['ApiUserAuth','ApiUserBindPhone','ApiUserStatus']);
 

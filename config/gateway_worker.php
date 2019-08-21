@@ -15,7 +15,7 @@ return [
     // 扩展自身需要的配置
     'protocol'              => 'websocket', // 协议 支持 tcp udp unix http websocket text
     'host'                  => '0.0.0.0', // 监听地址
-    'port'                  => 23481, // 监听端口
+    'port'                  => 23480, // 监听端口
     'socket'                => '', // 完整监听地址
     'context'               => [], // socket 上下文选项
     'register_deploy'       => true, // 是否需要部署register
@@ -23,7 +23,7 @@ return [
     'gateway_deploy'        => true, // 是否需要部署gateway
 
     // Register配置
-    'registerAddress'       => '127.0.0.1:1236',
+    'registerAddress'       => '127.0.0.1:1238',
 
     // Gateway配置
     'name'                  => 'thinkphp',
