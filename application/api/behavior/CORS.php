@@ -1,8 +1,8 @@
 <?php
 
-
 namespace app\api\behavior;
-use think\Request;
+
+use think\Response;
 
 class CORS
 {
@@ -14,6 +14,5 @@ class CORS
         if (request()->isOptions()) {
             exit();
         }
-
     }
 }
