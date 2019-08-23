@@ -538,7 +538,7 @@ class User extends Model
         // 获取用户id
         $userid = request()->userId;
 
-        $fens = $this->get($userid)->fens()->page($params['page'],10)->select()->toArray();
+        $fens = $this->get($userid)->fens()->with(['userinfo'])->page($params['page'],10)->select()->toArray();
         return $this->filterReturn($fens);
     }
     // 关联关注列表

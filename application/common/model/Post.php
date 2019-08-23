@@ -82,13 +82,13 @@ class Post extends Model
         $params = request()->param();
         return $this->with([
             'user'=>function($query){
-                return $query->field('id,username,userpic');
+                return $query->field('id,username,userpic')->with(['userinfo']);
             },
             'images'=>function($query){
                 return $query->field('url');
             },
             'share'
-        ])->select($params['id']);
+        ])->find($params['id']);
     }
 
     //搜索文章

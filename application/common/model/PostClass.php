@@ -9,7 +9,7 @@ class PostClass extends Model
     // 获取所有文章分类
     public function getPostClassList()
     {
-        return $this->field('id','classname')->where('status','1')->select();
+        return $this->field('id,classname')->where('status','1')->select();
     }
 
     // 关联文章模型
@@ -22,8 +22,13 @@ class PostClass extends Model
         $params = request()->param();
         $userId = request()->userId;
         $list= self::get($params['id'])->post()->with([
-            'user'=>function($query){
-                return $query->field('id,username,userpic');
+            'user'=>function($query) use($userId){
+                return $query->field('id,username,userpic')->with([
+                    'fens'=>function ($query) use($userId){
+                        return $query->where('user_id',$userId)->hidden(['password']);
+                    },
+                    'userinfo'
+                ]);
             },'images'=>function($query){
                 return $query->field('url');
             },'share',

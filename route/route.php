@@ -43,7 +43,7 @@ Route::group('api/:version/',function (){
     //广告列表
     Route::get('adsense/:type','api/:version.Adsense/index');
     //文章评论列表
-    Route::post('post/:id/comment','api/:version.Post/comment');
+    Route::get('post/:id/comment','api/:version.Post/comment');
     //检查更新
     Route::post('update','api/:version.Update/update');
 });
