@@ -34,7 +34,7 @@ class PostClass extends Model
             },'share',
             'support'=>function($query) use($userId){
                 return $query->where('user_id',$userId);
-            }])->page($params['page'],10)->select();
+            }])->withCount(['Ding','Cai','comment'])->page($params['page'],10)->order('create_time','desc')->select();
         return $list;
     }
 }

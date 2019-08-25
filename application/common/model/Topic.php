@@ -9,11 +9,15 @@ class Topic extends Model
     // 获取热门话题列表
     public function gethotlist()
     {
-        return $this->where('type',1)->limit(10)->select()->toArray();
+        return $this->where('type',1)->withCount(['post','todaypost'])->limit(10)->select()->toArray();
     }
     // 关联文章
     public function post(){
         return $this->belongsToMany('Post','topic_post');
+    }
+    // 关联今日文章
+    public function todaypost(){
+        return $this->belongsToMany('Post','topic_post')->whereTime('post.create_time', 'today');
     }
     //获取指定话题下的文章（分页）
     public function getPost(){

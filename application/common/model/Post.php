@@ -30,6 +30,15 @@ class Post extends Model
     public function share(){
         return $this->belongsTo('Post','share_id','id');
     }
+    // 关联顶数
+    public function Ding(){
+        return $this->hasMany('Support')->where('type',0);
+    }
+
+    // 关联踩数
+    public function Cai(){
+        return $this->hasMany('Support')->where('type',1);
+    }
     //发布文章
     public function createPost()
     {
@@ -93,8 +102,23 @@ class Post extends Model
 
     //搜索文章
     public function search(){
+        // 获取所有参数
         $params = request()->param();
-        $list = $this->whereLike('title','%'.$params['keyword'].'%')->page($params['page'],10)->select();
+        // 当前用户id 
+        $userId = request()->userId ? request()->userId : 0;
+        $list = $this->whereLike('title','%'.$params['keyword'].'%')->with([
+         	'user'=>function($query) use($userId){
+                return $query->field('id,username,userpic')->with([
+                    'fens'=>function($query) use($userId){
+                        return $query->where('user_id',$userId)->hidden(['password']);
+                    },'userinfo'
+                ]);
+            },'images'=>function($query){
+            return $query->field('url');
+        },'share'
+        ,'support'=>function($query) use($userId){
+            return $query->where('user_id',$userId);
+        }])->withCount(['Ding','Cai','comment'])->page($params['page'],10)->order('create_time','desc')->select();
         return $list;
     }
 

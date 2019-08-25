@@ -25,7 +25,7 @@ Route::group('api/:version/',function (){
     //热门话题获取
     Route::get('hottopic','api/:version.Topic/index');
     //获取指定话题分类下的话题列表
-    Route::get('topicclass/:id/topic/:page','api/:version.TopicCLass/topic');
+    Route::get('topicclass/:id/topic/:page','api/:version.TopicClass/topic');
     //获取文章
     Route::get('post/:id','api/:version.Post/index');
     //获取指定话题下的文章列表
