@@ -83,10 +83,26 @@ class User extends Model
     public function post(){
         return $this->hasMany('Post');
     }
-    //绑定粉丝表
+    //关联关注（关联到follow表）
     public function withfollow(){
         return $this->hasMany('Follow','user_id');
     }
+
+    // 关联粉丝 （关联到follow表）
+    public function withfen(){
+        return $this->hasMany('Follow','follow_id');
+    }
+
+    // 关联今日文章
+    public function todayPosts(){
+        return $this->hasMany('Post')->whereTime('create_time','today');
+    }
+
+    // 关联评论
+    public function comments(){
+        return $this->hasMany('Comment');
+    }
+
 
     //验证手机登录  
     public function phoneLogin(){
@@ -105,13 +121,21 @@ class User extends Model
             // 在用户信息表创建对应的记录（用户存放用户其他信息）
             $user->userinfo()->create(['user_id'=> $user->id]);
             $user->logintype = 'phone';
-            return $this->CreateSaveToken($user->toArray());
+            $userarr = $user->toArray();
+            $userarr['token'] = $this->CreateSaveToken($userarr);
+            $userarr['userinfo'] = $user->userinfo->toArray();
+            $userarr['email'] = false;
+            $userarr['password'] = false;
+            return $userarr;
         }
         // 用户是否被禁用
         $this->checkStatus($user->toArray());
         // 登录成功，返回token和用户信息
         $userarr = $user->toArray();
-        return $this->CreateSaveToken($userarr);
+        $userarr['token'] = $this->CreateSaveToken($userarr);
+        $userarr['userinfo'] = $user->userinfo->toArray();
+        $userarr['password'] = $userarr['password'] ? true : false;
+        return $userarr;
     }
     // 账户登录
     public function login(){
@@ -125,9 +149,12 @@ class User extends Model
         $this->checkStatus($user->toArray());
         //验证密码
         $this->checkPassword($param['password'], $user->password);
-        //登录成功 生成token 进行缓存 返回客户端
+        // 登录成功 生成token，进行缓存，返回客户端
         $userarr = $user->toArray();
-        return $this->CreateSaveToken($userarr);
+        $userarr['token'] = $this->CreateSaveToken($userarr);
+        $userarr['userinfo'] = $user->userinfo->toArray();
+        $userarr['password'] = $userarr['password'] ? true : false;
+        return $userarr;
 
     }
     //第三方登录
@@ -160,6 +187,13 @@ class User extends Model
         $arr['expires_in'] = $param['expires_in'];
         $userarr = $user->toArray();
         $userarr['token'] = $this->CreateSaveToken($arr);
+        // 判断是否绑定
+        if ($user->user_id) {
+            $currentuser = $this->find($user->user_id);
+            $userarr['user'] = $currentuser->toArray();
+            $userarr['user']['userinfo'] = $currentuser->userinfo->toArray();
+            $userarr['user']['password'] = $userarr['user']['password'] ? true : false;
+        }
         return $userarr;
     }
     //退出登录
@@ -567,5 +601,56 @@ class User extends Model
             ];
         }
         return $arr;
+    }
+    //统计获取用户相关数据（总文章数，今日文章数，评论数 ，关注数，粉丝数，文章总点赞数，好友数）
+    public function getCounts(){
+        // 获取用户id
+        $userid = request()->param('user_id');
+        $user = $this->withCount(['post','comments','todayPosts','withfollow','withfen'])->find($userid);
+        if (!$user) TApiException();
+        // 获取当前用户发布的所有文章id
+        $postIds = $user->post()->field('id')->select();
+        foreach ($postIds as $key => $value) {
+            $arr[] = $value['id'];
+        }
+        if (!isset($arr)) $arr = 0;
+        //文章总点赞数
+        $count = \Db::name('support')->where('type',1)->where('post_id','in',$arr)->count();
+
+        // 获取好友数
+        $friendCounts = Db::table('follow')->where('user_id','IN',function ($query) use($userid){
+            // 找出所有我关注的人的用户id
+            $query->table('follow')->where('user_id',$userid)->field('follow_id');
+        })->where('follow_id',$userid)->count();
+
+        return [
+            "post_count"=>$user['post_count'],
+            "comments_count"=>$user['comments_count'],
+            "today_posts_count"=>$user['today_posts_count'],
+            "withfollow_count"=>$user['withfollow_count'],
+            "withfen_count"=>$user['withfen_count'],
+            "total_ding_count"=>$count,
+            "friend_count"=>$friendCounts
+        ];
+    }
+    //获取指定用户详细信息
+    public function getUserInfo(){
+        $currentUserId = request()->userId ? request()->userId : 0;
+        $userid = request()->param('user_id');
+        $data = $this->with([
+            'userinfo',
+            'fens'=>function($query) use($currentUserId){
+                return $query->where('user_id',$currentUserId)->hidden(['password']);
+            },
+            'blacklist'=>function($query) use($currentUserId){
+                return $query->where('user_id',$currentUserId)->hidden(['password']);
+        }])->find($userid);
+        unset($data['password']);
+        return $data;
+    }
+
+    // 关联黑名单
+    public function blacklist(){
+        return $this->belongsToMany('User','Blacklist','user_id','black_id');
     }
 }

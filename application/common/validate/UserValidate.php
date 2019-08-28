@@ -88,6 +88,7 @@ class UserValidate extends BaseValidate
         'getfens'=>['page'],
         //关注列表
         'getfollows'=>['page'],
-
+        //获取指定用户详细信息
+        'getuserinfo'=>['user_id'],
     ];
 }

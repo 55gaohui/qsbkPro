@@ -20,22 +20,22 @@ class User extends BaseController
     public function phoneLogin(){
         // 验证登录信息
         (new UserValidate())->goCheck('phonelogin');
-        $token = (new UserModel())->phoneLogin();
-        return self::showResCode('登录成功',['token'=>$token]);
+        $user = (new UserModel())->phoneLogin();
+        return self::showResCode('登录成功',$user);
     }
     //用户名邮箱手机号登录
     public function login(){
         // 验证登录信息
         (new UserValidate())->goCheck('login');
-        $token = (new UserModel())->login();
-        return self::showResCode('登录成功',['token'=>$token]);
+        $user = (new UserModel())->login();
+        return self::showResCode('登录成功',$user);
     }
     //第三方登录
     public function otherLogin(){
         // 验证登录信息
         (new UserValidate())->goCheck('otherlogin');
-        $token = (new UserModel())->otherLogin();
-        return self::showResCode('登录成功',['token'=>$token]);
+        $user = (new UserModel())->otherLogin();
+        return self::showResCode('登录成功',$user);
     }
     //退出登录
     public function logout()
@@ -131,5 +131,17 @@ class User extends BaseController
         (new UserValidate())->goCheck('getfollows');
         $list = (new UserModel())->getFollowsList();
         return self::showResCode('获取成功',['list'=>$list]);
+    }
+    //获取用户数据
+    public function getCounts(){
+        (new UserValidate())->goCheck('getuserinfo');
+        $data = (new UserModel())->getCounts();
+        return self::showResCode('获取成功',['data'=>$data]);
+    }
+    //获取指定用户详细信息
+    public function getuserinfo(){
+        (new UserValidate())->goCheck('getuserinfo');
+        $data = (new UserModel())->getUserInfo();
+        return self::showResCode('获取成功',['data'=>$data]);
     }
 }

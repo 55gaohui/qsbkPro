@@ -46,6 +46,16 @@ Route::group('api/:version/',function (){
     Route::get('post/:id/comment','api/:version.Post/comment');
     //检查更新
     Route::post('update','api/:version.Update/update');
+    // 获取关注的人的公开文章列表
+
+    //  获取指定用户详细信息
+    Route::post('getuserinfo','api/:version.User/getuserinfo')->middleware(['ApiGetUserid']);
+    // 统计用户数据
+    Route::get('user/getcounts/:user_id','api/:version.User/getCounts');
+    // 微信小程序登录
+
+    // 支付宝小程序登录
+
 });
 
 // 验证Token
