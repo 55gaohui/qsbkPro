@@ -135,8 +135,8 @@ class User extends BaseController
     //获取用户数据
     public function getCounts(){
         (new UserValidate())->goCheck('getuserinfo');
-        $data = (new UserModel())->getCounts();
-        return self::showResCode('获取成功',['data'=>$data]);
+        $user = (new UserModel())->getCounts();
+        return self::showResCode('获取成功',$user);
     }
     //获取指定用户详细信息
     public function getuserinfo(){
