@@ -68,6 +68,8 @@ Route::group('api/:version/',function (){
     Route::post('user/bindemail','api/:version.User/bindemail');
     //绑定第三方
     Route::post('user/bindother','api/:version.User/bindother');
+    // 判断当前用户第三方登录绑定情况
+    Route::get('user/getuserbind','api/:version.User/getUserBind');
 })->middleware(['ApiUserAuth']);
 
 // 验证Token  手机号 状态

@@ -60,8 +60,8 @@ class User extends BaseController
     public function bindphone()
     {
         (new UserValidate())->goCheck('bindphone');
-        (new UserModel())->bindphone();
-        return self::showResCode('绑定成功');
+        $user = (new UserModel())->bindphone();
+        return self::showResCode('绑定成功',$user);
     }
     //绑定邮箱
     public function bindemail()
@@ -143,5 +143,10 @@ class User extends BaseController
         (new UserValidate())->goCheck('getuserinfo');
         $data = (new UserModel())->getUserInfo();
         return self::showResCode('获取成功',['data'=>$data]);
+    }
+    //判断当前用户userid的第三方登录绑定情况
+    public function getUserBind(){
+        $user = (new UserModel())->getUserBind();
+        return self::showResCode('获取成功',$user);
     }
 }

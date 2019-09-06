@@ -257,7 +257,10 @@ class User extends Model
                 //更新缓存
                 $currentUserInfo['user_id'] = $binduser->id;
                 Cache::set($currentUserInfo['token'],$currentUserInfo,$currentUserInfo['expires_in']);
-                return true;
+                $currentUserInfo['user'] = $binduser->toArray();
+                $currentUserInfo['user']['userinfo'] = $binduser->userinfo->toArray();
+                $currentUserInfo['user']['password'] = $currentUserInfo['user']['password'] ? true : false;
+                return $currentUserInfo;
             }
             TApiException('手机号绑定失败');
         }
@@ -279,14 +282,21 @@ class User extends Model
                 'username'=>$params['phone'],
                 'phone'=>$params['phone']
             ]);
+            // 在userinfo表创建记录
+            $user->userinfo()->create([ 'user_id'=>$user->id ]);
             //绑定
-            $userbind = $this->userbind()->find($currentUserInfo['id']);
+            $userbind = $user->userbind()->find($currentUserInfo['id']);
             $userbind->user_id = $user->id;
-            if($userbind->save()){
-                //更新缓存
+            if ($userbind->save()) {
+                // 更新缓存
                 $currentUserInfo['user_id'] = $user->id;
                 Cache::set($currentUserInfo['token'],$currentUserInfo,$currentUserInfo['expires_in']);
-                return true;
+
+                $currentUserInfo['user'] = $user->toArray();
+                $currentUserInfo['user']['userinfo'] = $user->userinfo->toArray();
+                $currentUserInfo['user']['password'] = (array_key_exists('password',$currentUserInfo['user']) && $currentUserInfo['user']['password']) ? true : false;
+
+                return $currentUserInfo;
             }
             TApiException('手机号绑定失败');
         }
@@ -382,7 +392,7 @@ class User extends Model
             if($binduser->user_id) TApiException(200,$params['provider'].'已被绑定',20006);
             //第三方的user_id=0 （未绑定）
             //绑定
-            $binduser->user_id = $currentUserInfo['id'];
+            $binduser->user_id = $currentUserId;
             return $binduser->save();
         }
         //不存在
@@ -647,6 +657,20 @@ class User extends Model
         }])->find($userid);
         unset($data['password']);
         return $data;
+    }
+    //判断当前用户userid的第三方登录绑定情况
+    public function getUserBind(){
+        // 获取用户id
+        $userid = request()->userId;
+        $userbind = $this->userbind()->where('user_id',$userid)->field('id,type,nickname')->select();
+        $arr = [];
+        foreach ($userbind as $key=>$value){
+            $arr[$value['type']] = [
+                'id'=>$value['id'],
+                'nickname'=>$value['nickname']
+            ];
+        }
+        return $arr;
     }
 
     // 关联黑名单
