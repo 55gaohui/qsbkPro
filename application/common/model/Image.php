@@ -21,8 +21,6 @@ class Image extends Model
     public function upload($userid = '',$field = '')
     {
         $files = request()->file($field);
-        //单图上传
-        if(!$files) TApiException(200,'请上传图片',10000);
         if(is_array($files)){
             // 多图上传
             $arr = [];
@@ -37,6 +35,8 @@ class Image extends Model
             }
             return $this->saveAll($arr);
         }
+        //单图上传
+        if(!$files) TApiException(200,'请上传图片',10000);
         //单文件上传
         $file = \app\common\controller\FileController::UploadEvent($files);
         //上传失败

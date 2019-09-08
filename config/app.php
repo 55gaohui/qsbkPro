@@ -17,7 +17,7 @@ return [
     // 应用名称
     'app_name'               => '仿糗事百科',
     // 应用地址
-    'app_host'               => 'http://api.qiushibk.com/',
+    'app_host'               => 'https://ghfree.cn/',
     // 应用调试模式
     'app_debug'              => true,
     // 应用Trace

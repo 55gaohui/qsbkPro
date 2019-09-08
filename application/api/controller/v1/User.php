@@ -82,8 +82,8 @@ class User extends BaseController
     public function editUserpic()
     {
         (new UserValidate())->goCheck('edituserpic');
-        (new UserModel())->editUserpic();
-        return self::showResCode('修改成功');
+        $src = (new UserModel())->editUserpic();
+        return self::showResCode('修改成功',$src);
     }
 
     //修改用户资料
