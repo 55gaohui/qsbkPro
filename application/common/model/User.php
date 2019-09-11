@@ -477,7 +477,7 @@ class User extends Model
         //修改用户头像
         $user = self::get($userid);
         $user->userpic = getFileUrl($image->url);  //getFileUrl添加完整地址
-        if($user->save()) return true;
+        if($user->save()) return $user->userpic;
         TApiException();
     }
     //修改用户资料
