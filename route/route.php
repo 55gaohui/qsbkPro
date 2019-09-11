@@ -29,15 +29,15 @@ Route::group('api/:version/',function (){
     //获取文章
     Route::get('post/:id','api/:version.Post/index');
     //获取指定话题下的文章列表
-    Route::get('topic/:id/post/:page','api/:version.Topic/post');
+    Route::get('topic/:id/post/:page','api/:version.Topic/post')->middleware(['ApiGetUserid']);
     //获取分类下的文章列表
     Route::get('postclass/:id/post/:page','api/:version.PostClass/post')->middleware(['ApiGetUserid']);
     //获取指定用户下的文章列表
-    Route::get('user/:id/post/:page','api/:version.User/post');
+    Route::get('user/:id/post/:page','api/:version.User/post')->middleware(['ApiGetUserid']);
     //搜索话题
     Route::post('search/topic','api/:version.Search/topic');
     //搜索文章
-    Route::post('search/post','api/:version.Search/post');
+    Route::post('search/post','api/:version.Search/post')->middleware(['ApiGetUserid']);
     //搜索用户
     Route::post('search/user','api/:version.Search/user');
     //广告列表
