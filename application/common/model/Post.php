@@ -64,25 +64,29 @@ class Post extends Model
         ]);
         if(!$post) TApiException(200,'发布失败',10000);
         // 关联图片
-        $imageLength = count($params['imglist']);
-        if($imageLength > 0){
-            $ImageModel = new Image();
-            $imgidarr = [];
-            for($i=0; $i<$imageLength; $i++){
-                // 验证图片是否存在，是否是当前用户上传的
-                $imagemodel = $ImageModel->isImageExist($params['imglist'][$i]['id'],$user_id);
-                if($imagemodel){
-                    // 设置第一张为封面图
-                    if($i === 0){
-                        $post->titlepic = getFileUrl($imagemodel->url);
-                        $post->save();
+        // 是否上传图片
+        if(empty($params['imgitglist'])){
+            $imageLength = count($params['imglist']);
+            if($imageLength > 0){
+                $ImageModel = new Image();
+                $imgidarr = [];
+                for($i=0; $i<$imageLength; $i++){
+                    // 验证图片是否存在，是否是当前用户上传的
+                    $imagemodel = $ImageModel->isImageExist($params['imglist'][$i]['id'],$user_id);
+                    if($imagemodel){
+                        // 设置第一张为封面图
+                        if($i === 0){
+                            $post->titlepic = getFileUrl($imagemodel->url);
+                            $post->save();
+                        }
+                        $imgidarr[] = $params['imglist'][$i]['id'];
                     }
-                    $imgidarr[] = $params['imglist'][$i]['id'];
                 }
+                // 发布关联
+                if(count($imgidarr)>0) $post->images()->attach($imgidarr,['create_time'=>time()]);
             }
-            // 发布关联
-            if(count($imgidarr)>0) $post->images()->attach($imgidarr,['create_time'=>time()]);
         }
+
         return $post;
     }
     //获取文章
