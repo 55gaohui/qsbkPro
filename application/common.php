@@ -21,5 +21,5 @@ function TApiException($code=400,$msg='异常',$errorCode=999)
 function getFileUrl($url='')
 {   
     if(!$url) return;
-    return url($url,'',false,true);
+    return Request::domain().'/'.$url;
 }

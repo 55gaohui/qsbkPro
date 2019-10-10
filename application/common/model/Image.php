@@ -36,7 +36,7 @@ class Image extends Model
             return $this->saveAll($arr);
         }
         //单图上传
-        if(!$files) TApiException(200,'请上传图片',10000);
+        if(!$files) TApiException(200,'请选择要上传的图片',10000);
         //单文件上传
         $file = \app\common\controller\FileController::UploadEvent($files);
         //上传失败
