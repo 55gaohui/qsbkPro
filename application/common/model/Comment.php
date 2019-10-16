@@ -33,7 +33,7 @@ class Comment extends Model
                 $fcomment->fnum = ['inc',1];
                 $fcomment->save();
             }
-            return true;
+            return $comment;
         }
         TApiException('评论失败');
     }

@@ -95,7 +95,7 @@ class Post extends Model
         $params = request()->param();
         return $this->with([
             'user'=>function($query){
-                return $query->field('id,username,userpic')->with(['userinfo']);
+                return $query->field('id,username,userpic,create_time')->with(['userinfo']);
             },
             'images'=>function($query){
                 return $query->field('url');
@@ -118,11 +118,11 @@ class Post extends Model
                     },'userinfo'
                 ]);
             },'images'=>function($query){
-            return $query->field('url');
-        },'share'
-        ,'support'=>function($query) use($userId){
-            return $query->where('user_id',$userId);
-        }])->withCount(['Ding','Cai','comment'])->page($params['page'],10)->order('create_time','desc')->select();
+                return $query->field('url');
+            },'share'
+            ,'support'=>function($query) use($userId){
+                return $query->where('user_id',$userId);
+            }])->withCount(['Ding','Cai','comment'])->page($params['page'],10)->order('create_time','desc')->select();
         return $list;
     }
 
@@ -137,5 +137,36 @@ class Post extends Model
             }
         ])->select();
         return $list;
+    }
+
+    //获取关注的人公开文章列表
+    public function getfollowPost(){
+        //获取所有参数
+        $param = request()->param();
+        $userId = request()->userId;
+        if(!$userId) return [];
+        //获取当前用户所有关注的人
+        $followList = model('User')->getFollowsList();
+        $count = count($followList);
+        if($count<1) return [];
+        $ids = [];
+        for($i=0; $i<$count; $i++){
+            $ids[] = $followList[$i]['id'];
+        }
+        //获取文章列表
+        return $this->where('user_id','in',$ids)->with([
+            'user'=>function($query) use($userId){
+                return $query->field('id,username,userpic')->with([
+                    'fens'=>function($query) use($userId){
+                    return $query->where('user_id',$userId)->hidden(['password']);
+                    },'userinfo'
+                ]);
+            },'images'=>function($query){
+                return $query->field('url');
+            },'share'
+            ,'support'=>function($query) use($userId){
+                return $query->where('user_id',$userId);
+            }])->withCount(['Ding','Cai','comment'])->page($param['page'],10)->order('create_time','desc')->select();
+
     }
 }

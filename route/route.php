@@ -47,7 +47,7 @@ Route::group('api/:version/',function (){
     //检查更新
     Route::post('update','api/:version.Update/update');
     // 获取关注的人的公开文章列表
-
+    Route::get('followpost/:page','api/:version.Post/followPost')->middleware(['ApiGetUserid']);
     //  获取指定用户详细信息
     Route::post('getuserinfo','api/:version.User/getuserinfo')->middleware(['ApiGetUserid']);
     // 统计用户数据

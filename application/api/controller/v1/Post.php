@@ -30,4 +30,12 @@ class Post extends BaseController
         return self::showResCode('获取成功',['list'=>$list]);
     }
 
+    //获取关注的人的公开文章列表
+    public function followPost(){
+        //验证文章id
+        (new PostValidate())->goCheck('list');
+        $list = (new PostModel())->getfollowPost();
+        return self::showResCode('获取成功',['list'=>$list]);
+    }
+
 }
