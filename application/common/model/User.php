@@ -228,7 +228,7 @@ class User extends Model
     //搜索用户
     public function search(){
         $params = request()->param();
-        $list = $this->whereLike('username','%'.$params['keyword'].'%')->page($params['page'],10)->select();
+        $list = $this->whereLike('username','%'.$params['keyword'].'%')->with(['userinfo'])->page($params['page'],10)->select();
         return $list;
     }
 
@@ -564,12 +564,16 @@ class User extends Model
         // 获取用户id
         $userid = request()->userId;
         $page = $params['page'];
-        $follows = Db::table('user')->where('id', 'IN', function($query) use($userid){
-          $query->table('follow')->where('user_id', 'IN', function($query) use($userid){
-              $query->table('follow')->where('user_id',$userid)->field('follow_id');
+        $subsql = Db::table('userinfo')->group('user_id')->buildSql();
+        $follows = Db::table('user')->where('a.id', 'IN', function($query) use($userid){
+            // 找出所有关注我的人的用户id
+          $query->table('follow')
+              ->where('user_id', 'IN', function($query) use($userid){
+                  // 找出所有我关注的人的用户id
+                  $query->table('follow')->where('user_id',$userid)->field('follow_id');
             })->where('follow_id',$userid)->field('user_id');
-        })->field('id,username,userpic')->select();
-        return $follows;
+        })->alias('a')->join([$subsql => 'w'],'w.user_id = a.id')->page($page,10)->select();
+        return $this->filterReturn($follows);
     }
     // 关联粉丝列表
     public function fens(){
@@ -595,20 +599,34 @@ class User extends Model
         $params = request()->param();
         // 获取用户id
         $userid = request()->userId;
-        $follows = $this->get($userid)->follows()->page($params['page'],10)->select()->toArray();
+        $follows = $this->get($userid)->follows()->with(['userinfo'])->page($params['page'],10)->select()->toArray();
         return $this->filterReturn($follows);
     }
 
     //粉丝列表和关注列表过滤字段
-    public function filterReturn($params = []){
+    public function filterReturn($param = []){
         $arr = [];
-        $length = count($params);
+        $length = count($param);
         for($i= 0; $i<$length; $i++){
-            $arr[] = [
-                'id'=>$params[$i]['id'],
-                'username'=>$params[$i]['username'],
-                'userpic'=>$params[$i]['userpic']
+            $arr[$i] = [
+                'id'=>$param[$i]['id'],
+                'username'=>$param[$i]['username'],
+                'userpic'=>$param[$i]['userpic']
             ];
+            if (array_key_exists('userinfo',$param[$i])) {
+                $arr[$i]['userinfo'] = $param[$i]['userinfo'];
+            }
+            if (array_key_exists('user_id',$param[$i])) {
+                $arr[$i]['userinfo'] = [
+                    'user_id'=> $param[$i]['user_id'],
+                    'age' => $param[$i]['age'],
+                    'sex' => $param[$i]['sex'],
+                    'qg' => $param[$i]['qg'],
+                    'job' => $param[$i]['job'],
+                    'path' => $param[$i]['path'],
+                    'birthday' => $param[$i]['birthday'],
+                ];
+            }
         }
         return $arr;
     }
