@@ -142,7 +142,7 @@ class User extends BaseController
     public function getuserinfo(){
         (new UserValidate())->goCheck('getuserinfo');
         $data = (new UserModel())->getUserInfo();
-        return self::showResCode('获取成功',['data'=>$data]);
+        return self::showResCode('获取成功',$data);
     }
     //判断当前用户userid的第三方登录绑定情况
     public function getUserBind(){
