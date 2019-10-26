@@ -206,22 +206,41 @@ class User extends Model
     //指定用户发布的文章列表
     public function getPostList(){
         $params = request()->param();
-        $list = self::get($params['id'])->post()->with(['user'=>function($query){
-            return $query->field('id,username,userpic');
-        },'images'=>function ($query){
+        $user = $this->get($params['id']);
+        // 当前用户id
+//        $user_id = request()->userId ? request()->userId : 0;
+        $user_id = $params['id'];
+        if(!$user) TApiException(200,'该用户不存在',10000);
+        $list = $user->post()->with(['user'=>function($query)use($user_id){
+            return $query->field('id,username,userpic')->with([
+                'fens'=>function($query) use($user_id){
+                    return $query->where('follow_id',$user_id)->hidden(['password']);
+                },'userinfo'
+            ]);
+        },'images'=>function($query){
             return $query->field('url');
-        },'share'])->page($params['page'],10)->select();
+        },'share',
+            'support'=>function($query) use($user_id){
+                return $query->where('user_id',$user_id);
+            }])->withCount(['Ding','Cai','comment'])->page($params['page'],10)->select();
         return $list;
     }
     //当前用户发布的文章列表
     public function getAllPostList(){
         $params = request()->param();
         $user_id = request()->userId;
-        $list = self::get($user_id)->post()->with(['user'=>function($query){
-            return $query->field('id,username,userpic');
+        $list = self::get($user_id)->post()->with(['user'=>function($query) use($user_id){
+            return $query->field('id,username,userpic')->with([
+                'fens'=>function($query) use($user_id){
+                    return $query->where('user_id',$user_id)->hidden(['password']);
+                },'userinfo'
+            ]);
         },'images'=>function($query){
             return $query->field('url');
-        },'share'])->page($params['page'],10)->select();
+        },'share',
+            'support'=>function($query) use($user_id){
+                return $query->where('user_id',$user_id);
+            }])->withCount(['Ding','Cai','comment'])->page($params['page'],10)->select();
         return $list;
     }
 
@@ -651,12 +670,19 @@ class User extends Model
             $query->table('follow')->where('user_id',$userid)->field('follow_id');
         })->where('follow_id',$userid)->count();
 
+        //获取用户所有粉丝id
+        $fens = Db::table('follow')->where('follow_id',$userid)->field('user_id')->select();
+        $fens_arr = [];
+        for ($i=0; $i < count($fens); $i++){
+            $fens_arr[] = $fens[$i]['user_id'];
+        }
         return [
             "post_count"=>$user['post_count'],
             "comments_count"=>$user['comments_count'],
             "today_posts_count"=>$user['today_posts_count'],
             "withfollow_count"=>$user['withfollow_count'],
             "withfen_count"=>$user['withfen_count'],
+            "fens_arr" => $fens_arr,
             "total_ding_count"=>$count,
             "friend_count"=>$friendCounts
         ];
