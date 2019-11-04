@@ -19,10 +19,10 @@ class Chat extends BaseController
     //接收未接收消息
     public function get(Request $request){
         //判断当前用户是否在线
-        if(!Gateway::isUidOnline($request->userId)) return;
+        if(!Gateway::isUidOnline($request->userId)) return self::showResCode('ok',[]);
         //获取并清除所有未接收信息
         $Cache = Cache::pull('userchat_'.$request->userId);
-        if(!$Cache || !is_array($Cache)) return;
+        if(!$Cache || !is_array($Cache)) return self::showResCode('ok',[]);
         //开始推送
         return self::showResCode('ok',$Cache);
     }
